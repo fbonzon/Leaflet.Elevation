@@ -103,7 +103,7 @@ L.Control.Elevation = L.Control.extend({
             background.on("touchmove.drag", this._dragHandler.bind(this)).
             on("touchstart.drag", this._dragStartHandler.bind(this)).
             on("touchstart.focus", this._mousemoveHandler.bind(this));
-            L.DomEvent.on(this._container, 'touchend', this._dragEndHandler, this);
+            L.DomEvent.on(this._container, "touchend", this._dragEndHandler, this);
 
         } else {
 
@@ -111,7 +111,7 @@ L.Control.Elevation = L.Control.extend({
             on("mouseout.focus", this._mouseoutHandler.bind(this)).
             on("mousedown.drag", this._dragStartHandler.bind(this)).
             on("mousemove.drag", this._dragHandler.bind(this));
-            L.DomEvent.on(this._container, 'mouseup', this._dragEndHandler, this);
+            L.DomEvent.on(this._container, "mouseup", this._dragEndHandler, this);
 
         }
 
@@ -121,12 +121,22 @@ L.Control.Elevation = L.Control.extend({
         this._appendYaxis(this._yaxisgraphicnode);
 
         var focusG = this._focusG = g.append("g");
-        this._mousefocus = focusG.append('svg:line')
-            .attr('class', 'mouse-focus-line')
-            .attr('x2', '0')
-            .attr('y2', '0')
-            .attr('x1', '0')
-            .attr('y1', '0');
+        this._mousefocus = focusG.append("svg:line")
+            .attr("class", "mouse-focus-line")
+            .attr("x2", 0)
+            .attr("y2", 0)
+            .attr("x1", 0)
+            .attr("y1", 0);
+        this._focuslabelXBackground = focusG.append("svg:rect")
+            .style("pointer-events", "none")
+            .attr("class", "mouse-focus-label-x-background")
+            .attr("rx", 10)
+            .attr("ry", 10);
+        this._focuslabelYBackground = focusG.append("svg:rect")
+            .style("pointer-events", "none")
+            .attr("class", "mouse-focus-label-y-background")
+            .attr("rx", 10)
+            .attr("ry", 10);
         this._focuslabelX = focusG.append("svg:text")
             .style("pointer-events", "none")
             .attr("class", "mouse-focus-label-x");
@@ -176,7 +186,7 @@ L.Control.Elevation = L.Control.extend({
                 .attr("width", x2 - x1)
                 .attr("height", this._height())
                 .attr("x", x1)
-                .attr('class', 'mouse-drag')
+                .attr("class", "mouse-drag")
                 .style("pointer-events", "none");
         } else {
             this._dragRectangle.attr("width", x2 - x1)
@@ -186,7 +196,7 @@ L.Control.Elevation = L.Control.extend({
     },
 
     /*
-     * Removes the drag rectangle and zoms back to the total extent of the data.
+     * Removes the drag rectangle and zooms back to the total extent of the data.
      */
     _resetDrag: function() {
 
@@ -198,7 +208,10 @@ L.Control.Elevation = L.Control.extend({
 
             this._hidePositionMarker();
 
-            this._map.fitBounds(this._fullExtent);
+            // NOTE: Keep in sync with other fitBounds() call in map.js.
+            this._map.fitBounds(this._fullExtent, {
+                padding: [27, 141]
+            });
 
         }
 
@@ -285,14 +298,14 @@ L.Control.Elevation = L.Control.extend({
         var container = this._container;
 
         //Makes this work on IE10 Touch devices by stopping it from firing a mouseout event when the touch is released
-        container.setAttribute('aria-haspopup', true);
+        container.setAttribute("aria-haspopup", true);
 
         if (!L.Browser.touch) {
             L.DomEvent
                 .disableClickPropagation(container);
             //.disableScrollPropagation(container);
         } else {
-            L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
+            L.DomEvent.on(container, "click", L.DomEvent.stopPropagation);
         }
 
         if (this.options.collapsed) {
@@ -300,33 +313,33 @@ L.Control.Elevation = L.Control.extend({
 
             if (!L.Browser.android) {
                 L.DomEvent
-                    .on(container, 'mouseover', this._expand, this)
-                    .on(container, 'mouseout', this._collapse, this);
+                    .on(container, "mouseover", this._expand, this)
+                    .on(container, "mouseout", this._collapse, this);
             }
-            var link = this._button = L.DomUtil.create('a', "elevation-toggle " + this.options.controlButton
+            var link = this._button = L.DomUtil.create("a", "elevation-toggle " + this.options.controlButton
                 .iconCssClass, container);
-            link.href = '#';
+            link.href = "#";
             link.title = this.options.controlButton.title;
 
             if (L.Browser.touch) {
                 L.DomEvent
-                    .on(link, 'click', L.DomEvent.stop)
-                    .on(link, 'click', this._expand, this);
+                    .on(link, "click", L.DomEvent.stop)
+                    .on(link, "click", this._expand, this);
             } else {
-                L.DomEvent.on(link, 'focus', this._expand, this);
+                L.DomEvent.on(link, "focus", this._expand, this);
             }
 
-            this._map.on('click', this._collapse, this);
+            this._map.on("click", this._collapse, this);
             // TODO keyboard accessibility
         }
     },
 
     _expand: function() {
-        this._container.className = this._container.className.replace(' elevation-collapsed', '');
+        this._container.className = this._container.className.replace(" elevation-collapsed", "");
     },
 
     _collapse: function() {
-        L.DomUtil.addClass(this._container, 'elevation-collapsed');
+        L.DomUtil.addClass(this._container, "elevation-collapsed");
     },
 
     _width: function() {
@@ -372,6 +385,7 @@ L.Control.Elevation = L.Control.extend({
                 .append("text")
                 .attr("x", -37)
                 .attr("y", 3)
+                .attr("class", "axis-unit-y")
                 .style("text-anchor", "end")
                 .text("ft");
         } else {
@@ -383,6 +397,7 @@ L.Control.Elevation = L.Control.extend({
                 .append("text")
                 .attr("x", -45)
                 .attr("y", 3)
+                .attr("class", "axis-unit-y")
                 .style("text-anchor", "end")
                 .text("m");
         }
@@ -401,6 +416,7 @@ L.Control.Elevation = L.Control.extend({
                 .append("text")
                 .attr("x", this._width() + 10)
                 .attr("y", 15)
+                .attr("class", "axis-unit-x")
                 .style("text-anchor", "end")
                 .text("mi");
         } else {
@@ -413,6 +429,7 @@ L.Control.Elevation = L.Control.extend({
                 .append("text")
                 .attr("x", this._width() + 20)
                 .attr("y", 15)
+                .attr("class", "axis-unit-x")
                 .style("text-anchor", "end")
                 .text("km");
         }
@@ -436,7 +453,7 @@ L.Control.Elevation = L.Control.extend({
     },
 
     /*
-     * Hides the position-/heigth indication marker drawn onto the map
+     * Hides the position-/height indication marker drawn onto the map
      */
     _hidePositionMarker: function() {
 
@@ -446,10 +463,6 @@ L.Control.Elevation = L.Control.extend({
         }
         if (this._mouseHeightFocus) {
             this._mouseHeightFocus.style("visibility", "hidden");
-            this._mouseHeightFocusLabel.style("visibility", "hidden");
-        }
-        if (this._pointG) {
-            this._pointG.style("visibility", "hidden");
         }
         this._focusG.style("visibility", "hidden");
 
@@ -482,22 +495,25 @@ L.Control.Elevation = L.Control.extend({
 
             if (!this._mouseHeightFocus) {
 
-                var heightG = d3.select(".leaflet-overlay-pane svg")
+                var heightG = this._mouseHeightFocus = d3.select(".leaflet-overlay-pane svg")
                     .append("g");
-                this._mouseHeightFocus = heightG.append('svg:line')
+
+                this._mouseHeightFocusLine = heightG.append("svg:line")
                     .attr("class", opts.theme + " height-focus line")
                     .attr("x2", 0)
                     .attr("y2", 0)
                     .attr("x1", 0)
                     .attr("y1", 0);
-
-                var pointG = this._pointG = heightG.append("g");
-                pointG.append("svg:circle")
-                    .attr("r", 6)
+                this._mouseHeightFocusPoint = heightG.append("g")
+                    .append("svg:circle")
+                    .attr("r", 4)
                     .attr("cx", 0)
                     .attr("cy", 0)
                     .attr("class", opts.theme + " height-focus circle-lower");
-
+                this._mouseHeightFocusLabelBackground = heightG.append("svg:rect")
+                    .attr("class", opts.theme + " height-focus-label-background")
+                    .attr("rx", 10)
+                    .attr("ry", 10);
                 this._mouseHeightFocusLabel = heightG.append("svg:text")
                     .attr("class", opts.theme + " height-focus-label")
                     .style("pointer-events", "none");
@@ -506,37 +522,32 @@ L.Control.Elevation = L.Control.extend({
 
             var normalizedAlt = this._height() / this._maxElevation * alt;
             var normalizedY = layerpoint.y - normalizedAlt;
-            this._mouseHeightFocus.attr("x1", layerpoint.x)
+            var labelY = numY + " " + (opts.imperial ? "ft" : "m");
+
+            this._mouseHeightFocusLine.attr("x1", layerpoint.x)
                 .attr("x2", layerpoint.x)
                 .attr("y1", layerpoint.y)
-                .attr("y2", normalizedY)
-                .style("visibility", "visible");
+                .attr("y2", normalizedY + 4);
 
-            this._pointG.attr("transform", "translate(" + layerpoint.x + "," + layerpoint.y + ")")
-                .style("visibility", "visible");
+            this._mouseHeightFocusPoint.attr("transform",
+                "translate(" + layerpoint.x + "," + layerpoint.y + ")");
 
-            if (opts.imperial) {
-                this._mouseHeightFocusLabel.attr("x", layerpoint.x)
-                    .attr("y", normalizedY)
-                    .text(numY + " ft")
-                    .style("visibility", "visible");
-            } else {
-                this._mouseHeightFocusLabel.attr("x", layerpoint.x)
-                    .attr("y", normalizedY)
-                    .text(numY + " m")
-                    .style("visibility", "visible");
-            }
+            this._mouseHeightFocusLabel.attr("x", layerpoint.x)
+                .attr("y", normalizedY)
+                .text(labelY);
+
+            this._adjustLabelBackground(
+                this._mouseHeightFocusLabel,
+                this._mouseHeightFocusLabelBackground);
+
+            this._mouseHeightFocus.style("visibility", "visible");
 
         } else {
 
             if (!this._marker) {
-
                 this._marker = new L.Marker(ll).addTo(this._map);
-
             } else {
-
                 this._marker.setLatLng(ll);
-
             }
 
         }
@@ -609,18 +620,18 @@ L.Control.Elevation = L.Control.extend({
 
         if (geom) {
             switch (geom.type) {
-                case 'LineString':
+                case "LineString":
                     this._addGeoJSONData(geom.coordinates);
                     break;
 
-                case 'MultiLineString':
+                case "MultiLineString":
                     for (i = 0; i < geom.coordinates.length; i++) {
                         this._addGeoJSONData(geom.coordinates[i]);
                     }
                     break;
 
                 default:
-                    throw new Error('Invalid GeoJSON object.');
+                    throw new Error("Invalid GeoJSON object.");
             }
         }
 
@@ -689,31 +700,64 @@ L.Control.Elevation = L.Control.extend({
 
     _showDiagramIndicator: function(item, xCoordinate) {
         var opts = this.options;
-        this._focusG.style("visibility", "visible");
-        this._mousefocus.attr('x1', xCoordinate)
-            .attr('y1', 0)
-            .attr('x2', xCoordinate)
-            .attr('y2', this._height())
-            .classed('hidden', false);
+
+        this._mousefocus.attr("x1", xCoordinate)
+            .attr("y1", -2)
+            .attr("x2", xCoordinate)
+            .attr("y2", this._height() + 1);
 
         var alt = item.altitude,
             dist = item.dist,
             ll = item.latlng,
             numY = opts.hoverNumber.formatter(alt, opts.hoverNumber.decimalsY),
-            numX = opts.hoverNumber.formatter(dist, opts.hoverNumber.decimalsX);
+            numX = opts.hoverNumber.formatter(dist, opts.hoverNumber.decimalsX),
+            labelY = numY + " " + (opts.imperial ? "ft" : "m"),
+            labelX = numX + " " + (opts.imperial ? "mi" : "km");
 
-        if (opts.imperial) {
-            this._focuslabelX.attr("x", xCoordinate)
-                .text(numY + " ft");
-            this._focuslabelY.attr("y", this._height() - 5)
-                .attr("x", xCoordinate)
-                .text(numX + " mi");
-        } else {
-            this._focuslabelX.attr("x", xCoordinate)
-                .text(numY + " m");
-            this._focuslabelY.attr("y", this._height() - 5)
-                .attr("x", xCoordinate)
-                .text(numX + " km");
+        this._focuslabelX.attr("y", -7)
+            .attr("x", xCoordinate)
+            .text(labelY);
+        this._focuslabelY.attr("y", this._height() + 16)
+            .attr("x", xCoordinate)
+            .text(labelX);
+
+        this._adjustLabelBackground(
+            this._focuslabelX,
+            this._focuslabelXBackground);
+        this._adjustLabelBackground(
+            this._focuslabelY,
+            this._focuslabelYBackground);
+
+        this._focusG.style("visibility", "visible");
+    },
+
+    /*
+     * Gets bounding box from text element, copies and slightly enlarges it for
+     * rectangle element below it.
+     */
+    _adjustLabelBackground: function(label, background) {
+        try {
+          var bBox = label.node().getBBox();
+        } catch (e) {
+          return;
+        }
+        for (var property in bBox) {
+            var value = bBox[property];
+            switch (property) {
+                case "width":
+                   value += 20;
+                   break;
+                case "height":
+                   value += 4;
+                   break;
+                case "x":
+                   value -= 10;
+                   break;
+                case "y":
+                   value -= 2;
+                   break;
+            }
+            background.attr(property, value);
         }
     },
 

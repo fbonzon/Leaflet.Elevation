@@ -1,73 +1,109 @@
 .@{theme}.leaflet-control.elevation {
+  // No "line-height" makes a 10 margin px appear below elevation profile. A 0
+  // value causes all text inside the svg element to disappear in Edge.
+  // HACK: A very low line-height produces no margin in all tested browsers.
+  line-height: .1px;
 
-	.background {
-		background-color:@background;
-		.rounded-corners;
-	}
+  .background {
+    background-color: @background;
+    .rounded-corners;
+  }
 
-	.axis path,
-	.axis line {
-		fill: none;
-		stroke: @axis-color;
-		stroke-width:@stroke-width-axis;
-	}
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: @axis-color;
+    stroke-width: @stroke-width-axis;
+  }
 
-	.mouse-focus-label-y,
-	.mouse-focus-label-x {
+  .tick text,
+  text.axis-unit-x,
+  text.axis-unit-y {
+    text-shadow:
+      1.6px 0 .4px rgba(255, 255, 255, .94),
+      0 1.6px .4px rgba(255, 255, 255, .94),
+      -1.6px 0 .4px rgba(255, 255, 255, .94),
+      0 -1.6px .4px rgba(255, 255, 255, .94);
+  }
 
-	}
-	.mouse-drag{
-		fill:@drag-color;
-	}
+  .mouse-focus-label-x,
+  .mouse-focus-label-y {
+    fill: white;
+    font-size: 14px;
+    letter-spacing: .5px;
+  }
 
-	.elevation-toggle {
-		cursor: pointer;
-		box-shadow: 0 1px 7px rgba(0,0,0,0.4);
-		-webkit-border-radius: 5px;
-		border-radius: 5px;
-		width: 36px;
-		height: 36px;
-		background-color: #f8f8f9;
-	}
-	.elevation-toggle-icon{
-		background: url(@icon) no-repeat center center;
-	}
+  .mouse-focus-label-x-background,
+  .mouse-focus-label-y-background {
+    fill: @stroke-color;
+    fill-opacity: .93;
+  }
 
-	.area {
-		fill: @base-color;
-	}
+  .mouse-focus-label-y,
+  .mouse-focus-label-y-background {
+    display: none;
+  }
 
-	.mouse-focus-line {
-		pointer-events: none;
-		stroke-width:@stroke-width-mouse-focus;
-		stroke:@stroke-color;
-	}
+  .mouse-drag {
+    fill: @drag-color;
+  }
+
+  .elevation-toggle {
+    cursor: pointer;
+    box-shadow: 0 1px 7px rgba(0, 0, 0, .4);
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    width: 36px;
+    height: 36px;
+    background-color: #f8f8f9;
+  }
+
+  .elevation-toggle-icon {
+    background: url(@icon) no-repeat center center;
+  }
+
+  .area {
+    fill: @base-color;
+  }
+
+  .mouse-focus-line {
+    pointer-events: none;
+    stroke-width: @stroke-width-mouse-focus;
+    stroke: @stroke-color;
+  }
 }
 
 .@{theme}.leaflet-control.elevation-collapsed {
-	.background {
-		display: none;
-	}
+  .background {
+    display: none;
+  }
 
-	.elevation-toggle {
-		display: block;
-	}
+  .elevation-toggle {
+    display: block;
+  }
 }
 
-.@{theme}.height-focus{
-	stroke:@base-color;
-	fill:@base-color;
+.@{theme}.height-focus {
+  stroke: @stroke-color;
+  fill: @stroke-color;
 }
 
-.@{theme}.height-focus.line{
-	pointer-events: none;
-	stroke-width:@stroke-width-height-focus;
+.@{theme}.height-focus.line {
+  pointer-events: none;
+  stroke-width: @stroke-width-height-focus;
 }
 
-.@{theme}.height-focus-label{
+// Unused.
+// .@{theme}.height-focus.circle-lower {
+// }
 
+.@{theme}.height-focus-label {
+  fill: white;
+  font-size: 14px;
+  letter-spacing: .5px;
 }
 
-.@{theme}.height-focus.circle-lower {
-
+.@{theme}.height-focus-label-background {
+  fill: @stroke-color;
+  fill-opacity: .93;
 }

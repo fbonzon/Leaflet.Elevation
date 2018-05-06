@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Compiles .less files to CSS.
 
 set -e
